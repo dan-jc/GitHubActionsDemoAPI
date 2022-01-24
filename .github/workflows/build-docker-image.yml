@@ -1,0 +1,26 @@
+name: Build Docker Image
+
+on:
+  workflow_run:
+    workflows: [Build and Unit Test]
+    types: [completed]
+    branches: [main, staging]
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: |
+        echo 'Build Workflow success'
+        docker build -f GitHubActionsDemoAPI\Dockerfile -t demo_api:${{ github.run_id }} .
+
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo 'Build Workflow failed'
+
+ 
